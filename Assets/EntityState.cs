@@ -15,12 +15,6 @@ public abstract class EntityState
         this.name = name;
     }
 
-    protected EntityState(StateMachine machine, string v)
-    {
-        this.machine = machine;
-        this.v = v;
-    }
-
     public virtual void Enter()
     {
         Debug.Log($"{nameof(Enter)} {name}");

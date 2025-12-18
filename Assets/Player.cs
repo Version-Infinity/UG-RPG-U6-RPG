@@ -3,19 +3,38 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private StateMachine machine;
-    public PlayerIdleState IdelState { get; private set; }
-    public PlayerMoveState MoveState { get; private set; }
+    private PlayerInputSet inputSet;
+
+    public Player_IdleState IdleState { get; private set; }
+    public Player_MoveState MoveState { get; private set; }
+
+    public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     public void Awake()
     {
         machine = new StateMachine();
-        IdelState = new PlayerIdleState(this, machine);
-        MoveState = new PlayerMoveState(this, machine);
+        inputSet = new PlayerInputSet();
+        IdleState = new Player_IdleState(this, machine);
+        MoveState = new Player_MoveState(this, machine);
+    }
+
+    private void OnEnable()
+    { 
+        inputSet.Enable();
+
+        inputSet.Player.Movement.performed += ctx => MovementInput = ctx.ReadValue<Vector2>();
+
+        inputSet.Player.Movement.canceled += ctx => MovementInput = Vector2.zero;
+    }
+
+    private void OnDisable()
+    {
+        inputSet.Disable();
     }
 
     public void Start()
     {
-        machine.Initialize(IdelState);
+        machine.Initialize(IdleState);
     }
 
     public void Update()
