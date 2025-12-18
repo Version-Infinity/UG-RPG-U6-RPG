@@ -1,14 +1,24 @@
 using UnityEngine;
 
-public class EntityState 
+public abstract class EntityState 
 {
     protected StateMachine assignedMachine;
     protected string name;
+    protected Player player;
+    private StateMachine machine;
+    private string v;
 
-    public EntityState(StateMachine machine, string name)
+    public EntityState(Player player, StateMachine machine, string name)
     {
+        this.player = player;
         this.assignedMachine = machine;
         this.name = name;
+    }
+
+    protected EntityState(StateMachine machine, string v)
+    {
+        this.machine = machine;
+        this.v = v;
     }
 
     public virtual void Enter()

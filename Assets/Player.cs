@@ -3,18 +3,19 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private StateMachine machine;
-;
-    private EntityState idleState;
+    public PlayerIdleState IdelState { get; private set; }
+    public PlayerMoveState MoveState { get; private set; }
 
     public void Awake()
     {
         machine = new StateMachine();
-        idleState = new EntityState(machine, "Idle");
+        IdelState = new PlayerIdleState(this, machine);
+        MoveState = new PlayerMoveState(this, machine);
     }
 
     public void Start()
     {
-        machine.Initialize(idleState);
+        machine.Initialize(IdelState);
     }
 
     public void Update()
