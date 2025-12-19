@@ -5,17 +5,23 @@ public class Player : MonoBehaviour
     private StateMachine machine;
     private PlayerInputSet inputSet;
 
+    public Rigidbody2D Rigidbody { get; private set; }
+
     public Animator Animator { get; private set; }
     public Player_IdleState IdleState { get; private set; }
     public Player_MoveState MoveState { get; private set; }
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
+    [Header("Movement Settings")]
+    [SerializeField] public float MoveSpeed = 5f;
 
     public void Awake()
     {
         Animator = GetComponentInChildren<Animator>();
-        machine = new StateMachine();
+        Rigidbody = GetComponent<Rigidbody2D>();
         inputSet = new PlayerInputSet();
+
+        machine = new StateMachine();
         IdleState = new Player_IdleState(this, machine);
         MoveState = new Player_MoveState(this, machine);
     }
@@ -42,5 +48,11 @@ public class Player : MonoBehaviour
     public void Update()
     {
         machine.UpdateCurrentState();
+    }
+
+    public void SetVelocity(float x, float y)
+    {
+        Rigidbody.linearVelocityX = x;
+        Rigidbody.linearVelocityY = y;
     }
 }

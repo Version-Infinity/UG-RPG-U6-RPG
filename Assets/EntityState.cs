@@ -6,6 +6,7 @@ public abstract class EntityState
     protected string animatorBoolKey;
     protected Player assignedPlayer;
     protected Animator playerAnimator;
+    protected Rigidbody2D playerRigidbody2D;
 
     public EntityState(Player player, StateMachine machine, string name)
     {
@@ -13,6 +14,7 @@ public abstract class EntityState
         assignedMachine = machine;
         animatorBoolKey = name;
         playerAnimator = player.Animator;
+        playerRigidbody2D = player.Rigidbody;
     }
 
     public virtual void Enter()
