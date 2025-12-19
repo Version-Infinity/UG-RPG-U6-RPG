@@ -7,6 +7,7 @@ public abstract class EntityState
     protected Player assignedPlayer;
     protected Animator playerAnimator;
     protected Rigidbody2D playerRigidbody2D;
+    protected PlayerInputSet playerInputSet;
 
     public EntityState(Player player, StateMachine machine, string name)
     {
@@ -15,6 +16,7 @@ public abstract class EntityState
         animatorBoolKey = name;
         playerAnimator = player.Animator;
         playerRigidbody2D = player.Rigidbody;
+        playerInputSet = player.InputSet;
     }
 
     public virtual void Enter()
@@ -24,7 +26,7 @@ public abstract class EntityState
 
     public virtual void Update()
     {
-        Debug.Log($"{nameof(Update)} {animatorBoolKey}");
+        playerAnimator.SetFloat("yVelocity", playerRigidbody2D.linearVelocityY);
     }
 
     public virtual void Exit()
