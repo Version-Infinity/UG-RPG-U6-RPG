@@ -3,30 +3,30 @@ using UnityEngine;
 public abstract class EntityState 
 {
     protected StateMachine assignedMachine;
-    protected string name;
-    protected Player player;
-    private StateMachine machine;
-    private string v;
+    protected string animatorBoolKey;
+    protected Player assignedPlayer;
+    protected Animator playerAnimator;
 
     public EntityState(Player player, StateMachine machine, string name)
     {
-        this.player = player;
-        this.assignedMachine = machine;
-        this.name = name;
+        assignedPlayer = player;
+        assignedMachine = machine;
+        animatorBoolKey = name;
+        playerAnimator = player.Animator;
     }
 
     public virtual void Enter()
     {
-        Debug.Log($"{nameof(Enter)} {name}");
+        playerAnimator.SetBool(animatorBoolKey, true);
     }
 
     public virtual void Update()
     {
-        Debug.Log($"{nameof(Update)} {name}");
+        Debug.Log($"{nameof(Update)} {animatorBoolKey}");
     }
 
     public virtual void Exit()
     {
-        Debug.Log($"{nameof(Exit)} {name}");
+        playerAnimator.SetBool(animatorBoolKey, false);
     }
 }

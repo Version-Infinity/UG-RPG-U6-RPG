@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Player_IdleState : EntityState
 {
-    public Player_IdleState(Player player, StateMachine machine) : base(player, machine, "Idle State")
+    public Player_IdleState(Player player, StateMachine machine) : base(player, machine, "idle")
     {
     }
 
@@ -10,7 +10,7 @@ public class Player_IdleState : EntityState
     {
         base.Update();
 
-        if (player.MovementInput.x != 0)
-            assignedMachine.ChangeState(player.MoveState);
+        if (assignedPlayer.MovementInput.x != 0)
+            assignedMachine.ChangeState(assignedPlayer.MoveState);
     }
 }

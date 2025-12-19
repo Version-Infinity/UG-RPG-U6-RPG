@@ -5,13 +5,15 @@ public class Player : MonoBehaviour
     private StateMachine machine;
     private PlayerInputSet inputSet;
 
+    public Animator Animator { get; private set; }
     public Player_IdleState IdleState { get; private set; }
     public Player_MoveState MoveState { get; private set; }
-
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
+
 
     public void Awake()
     {
+        Animator = GetComponentInChildren<Animator>();
         machine = new StateMachine();
         inputSet = new PlayerInputSet();
         IdleState = new Player_IdleState(this, machine);
