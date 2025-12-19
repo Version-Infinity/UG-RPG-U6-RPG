@@ -13,10 +13,14 @@ public class Player : MonoBehaviour
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     [Header("Movement Settings")]
-    [SerializeField] public float MoveSpeed = 5f;
+    [SerializeField] public float MoveSpeed;
+
+    [SerializeField] private EntityDirection currentDirection;
 
     public void Awake()
-    {
+    { 
+        currentDirection = EntityDirection.Right;
+        MoveSpeed = 8f;
         Animator = GetComponentInChildren<Animator>();
         Rigidbody = GetComponent<Rigidbody2D>();
         inputSet = new PlayerInputSet();
@@ -54,5 +58,24 @@ public class Player : MonoBehaviour
     {
         Rigidbody.linearVelocityX = x;
         Rigidbody.linearVelocityY = y;
+        HandleFlip(x);
+    }
+
+    private void HandleFlip(float xVelocity)
+    {
+        if (xVelocity > 0 && currentDirection == EntityDirection.Left)
+            FlipEntityDirection();
+        else if (xVelocity < 0 && currentDirection == EntityDirection.Right)
+            FlipEntityDirection();
+    }
+
+    private void FlipEntityDirection()
+    {
+        if (currentDirection == EntityDirection.Right)
+            currentDirection = EntityDirection.Left;
+        else
+            currentDirection = EntityDirection.Right; 
+
+        transform.Rotate(0f, 180f, 0f);
     }
 }
