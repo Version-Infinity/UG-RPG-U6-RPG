@@ -39,6 +39,6 @@ public class Player : MonoBehaviour
 
     public void Update()
     {
-        machine.CurrentState.Update();
+        machine.UpdateCurrentState();
     }
 }

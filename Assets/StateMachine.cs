@@ -1,3 +1,5 @@
+using Unity.VisualScripting;
+
 public class StateMachine 
 {
     public EntityState CurrentState { get; private set; }
@@ -13,5 +15,10 @@ public class StateMachine
         CurrentState.Exit();
         CurrentState = newState;
         CurrentState.Enter();
+    }
+
+    public void UpdateCurrentState()
+    {
+        CurrentState?.Update();
     }
 }
