@@ -9,15 +9,13 @@ public class Player_JumpState : Player_AiredState
     override public void Enter()
     {
         base.Enter();
-        assignedPlayer.SetVelocity(playerRigidbody2D.linearVelocityY, assignedPlayer.JumpForce);
+        assignedPlayer.SetVelocity(playerRigidbody2D.linearVelocityX, assignedPlayer.JumpForce);
     }
 
     override public void Update()
     {
         base.Update();
-        if (playerRigidbody2D.linearVelocityY <= 0)
-        {
+        if (playerRigidbody2D.linearVelocityY < 0)
             assignedMachine.ChangeState(assignedPlayer.FallState);
-        }
     }
 }

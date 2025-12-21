@@ -1,3 +1,5 @@
+using UnityEditor;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,6 +13,7 @@ public class Player : MonoBehaviour
     public Player_MoveState MoveState { get; private set; }
     public Player_JumpState JumpState { get; private set; }
     public Player_FallState FallState { get; private set; }
+    public Player_WallSlideState WallSlideState { get; private set; }
 
 
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
@@ -18,14 +21,18 @@ public class Player : MonoBehaviour
     [Header("Movement Settings")]
     public float MoveSpeed = 8f;
     public float JumpForce = 12f;
+    public float WallSlideSpeed = .3f;
+
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
     [SerializeField] private EntityDirection currentDirection = EntityDirection.Right;
 
     [Header("Ground Detection Settings")]
-    [SerializeField] private float rayLength = 0.8f;
+    [SerializeField] private float groundCheckDistance = 1.4f;
+    [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
     public bool Grounded { get; private set; }
+    public bool WallDetected { get; private set; }
 
     public void Awake()
     { 
@@ -38,12 +45,28 @@ public class Player : MonoBehaviour
         MoveState = new Player_MoveState(this, machine);
         JumpState = new Player_JumpState(this, machine);
         FallState = new Player_FallState(this, machine);
+        WallSlideState = new Player_WallSlideState(this, machine);
 
-        // Set initial rotation based on currentDirection
+        ProcessInititalState();
+    }
+
+    private void OnValidate()
+    {
+        ProcessInititalState();
+    }
+
+    private void ProcessInititalState()
+    {
         if (currentDirection == EntityDirection.Left)
         {
-            transform.Rotate(0f, 180f, 0f);
+            transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        }
+
+        HandleCollisionDection();
     }
 
     private void OnEnable()
@@ -80,12 +103,12 @@ public class Player : MonoBehaviour
     private void HandleFlip(float xVelocity)
     {
         if (xVelocity > 0 && currentDirection == EntityDirection.Left)
-            FlipEntityDirection();
+            FlipDirection();
         else if (xVelocity < 0 && currentDirection == EntityDirection.Right)
-            FlipEntityDirection();
+            FlipDirection();
     }
 
-    private void FlipEntityDirection()
+    public void FlipDirection()
     {
         if (currentDirection == EntityDirection.Right)
             currentDirection = EntityDirection.Left;
@@ -98,18 +121,30 @@ public class Player : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -rayLength));
+        Gizmos.color = Color.purple;
+        
+        // Ground Check
+        Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -groundCheckDistance));
+
+        // Wall Check
+        int directionMultiplier = currentDirection == EntityDirection.Right ? 1 : -1;
+        Gizmos.DrawLine(transform.position, transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0));
     }
 
     public void HandleCollisionDection()
     {
-        Grounded = Physics2D.Raycast(transform.position, Vector2.down, rayLength, groundLayer);
+        Grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+        WallDetected = Physics2D.Raycast(transform.position, currentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
     }
 
     public bool IsGrounded()
     {
         return Grounded;
+    }
+
+    public bool IsTouchingWall()
+    {
+        return WallDetected;
     }
 
 }

@@ -14,5 +14,10 @@ public class Player_AiredState : EntityState
         {
             assignedPlayer.SetVelocity(assignedPlayer.MovementInput.x * (assignedPlayer.MoveSpeed * assignedPlayer.InAirMoveMultiplier), playerRigidbody2D.linearVelocityY);
         }
+
+        if(assignedPlayer.IsGrounded())
+            assignedMachine.ChangeState(assignedPlayer.IdleState);
+        else if (assignedPlayer.IsTouchingWall())
+            assignedMachine.ChangeState(assignedPlayer.WallSlideState);
     }
 }
