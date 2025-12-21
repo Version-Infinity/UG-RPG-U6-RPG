@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Player_FallState : EntityState
+public class Player_FallState : Player_AiredState
 {
     public Player_FallState(Player player, StateMachine machine) : base(player, machine, "jumpFall")
     {
@@ -12,9 +12,9 @@ public class Player_FallState : EntityState
     public override void Update()
     {
         base.Update();
-        //if (playerRigidbody2D.IsGrounded())
-        //{
-        //    assignedMachine.ChangeState(assignedPlayer.IdleState);
-        //}
+        if (assignedPlayer.IsGrounded())
+        {
+            assignedMachine.ChangeState(assignedPlayer.IdleState);
+        }
     }
 }

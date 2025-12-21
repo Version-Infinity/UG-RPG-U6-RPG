@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
     public PlayerInputSet InputSet { get; private set; }
 
     public Rigidbody2D Rigidbody { get; private set; }
-
     public Animator Animator { get; private set; }
     public Player_IdleState IdleState { get; private set; }
     public Player_MoveState MoveState { get; private set; }
@@ -17,15 +16,19 @@ public class Player : MonoBehaviour
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     [Header("Movement Settings")]
-    public float MoveSpeed;
-    public float JumpForce;
-    [SerializeField] private EntityDirection currentDirection;
+    public float MoveSpeed = 8f;
+    public float JumpForce = 12f;
+    [Range(0, 1)]
+    public float InAirMoveMultiplier = 0.5f;
+    [SerializeField] private EntityDirection currentDirection = EntityDirection.Right;
+
+    [Header("Ground Detection Settings")]
+    [SerializeField] private float rayLength = 0.8f;
+    [SerializeField] private LayerMask groundLayer;
+    public bool Grounded { get; private set; }
 
     public void Awake()
     { 
-        currentDirection = EntityDirection.Right;
-        MoveSpeed = 8f;
-        JumpForce = 5f;
         Animator = GetComponentInChildren<Animator>();
         Rigidbody = GetComponent<Rigidbody2D>();
         InputSet = new PlayerInputSet();
@@ -35,6 +38,12 @@ public class Player : MonoBehaviour
         MoveState = new Player_MoveState(this, machine);
         JumpState = new Player_JumpState(this, machine);
         FallState = new Player_FallState(this, machine);
+
+        // Set initial rotation based on currentDirection
+        if (currentDirection == EntityDirection.Left)
+        {
+            transform.Rotate(0f, 180f, 0f);
+        }
     }
 
     private void OnEnable()
@@ -59,12 +68,12 @@ public class Player : MonoBehaviour
     public void Update()
     {
         machine.UpdateCurrentState();
+        HandleCollisionDection();
     }
 
     public void SetVelocity(float x, float y)
     {
-        Rigidbody.linearVelocityX = x;
-        Rigidbody.linearVelocityY = y;
+        Rigidbody.linearVelocity = new Vector2(x, y);
         HandleFlip(x);
     }
 
@@ -85,4 +94,22 @@ public class Player : MonoBehaviour
 
         transform.Rotate(0f, 180f, 0f);
     }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -rayLength));
+    }
+
+    public void HandleCollisionDection()
+    {
+        Grounded = Physics2D.Raycast(transform.position, Vector2.down, rayLength, groundLayer);
+    }
+
+    public bool IsGrounded()
+    {
+        return Grounded;
+    }
+
 }
