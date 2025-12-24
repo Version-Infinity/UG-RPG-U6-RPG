@@ -1,4 +1,4 @@
-﻿internal enum EntityDirection
+﻿public enum EntityDirection
 {
     Right,
     Left,

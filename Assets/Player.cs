@@ -14,18 +14,20 @@ public class Player : MonoBehaviour
     public Player_JumpState JumpState { get; private set; }
     public Player_FallState FallState { get; private set; }
     public Player_WallSlideState WallSlideState { get; private set; }
-
+    public Player_WallJumpState WallJumpState { get; private set; }
 
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     [Header("Movement Settings")]
+    public EntityDirection CurrentDirection { get; private set; } = EntityDirection.Right;
+    public int CurrentDirectionX { get { return CurrentDirection == EntityDirection.Right ? 1 : -1; } }
     public float MoveSpeed = 8f;
     public float JumpForce = 12f;
     public float WallSlideSpeed = .3f;
-
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
-    [SerializeField] private EntityDirection currentDirection = EntityDirection.Right;
+    public Vector2 WallJumpForce;
+
 
     [Header("Ground Detection Settings")]
     [SerializeField] private float groundCheckDistance = 1.4f;
@@ -46,7 +48,7 @@ public class Player : MonoBehaviour
         JumpState = new Player_JumpState(this, machine);
         FallState = new Player_FallState(this, machine);
         WallSlideState = new Player_WallSlideState(this, machine);
-
+        WallJumpState = new Player_WallJumpState(this, machine);
         ProcessInititalState();
     }
 
@@ -57,7 +59,7 @@ public class Player : MonoBehaviour
 
     private void ProcessInititalState()
     {
-        if (currentDirection == EntityDirection.Left)
+        if (CurrentDirection == EntityDirection.Left)
         {
             transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         }
@@ -102,18 +104,18 @@ public class Player : MonoBehaviour
 
     private void HandleFlip(float xVelocity)
     {
-        if (xVelocity > 0 && currentDirection == EntityDirection.Left)
+        if (xVelocity > 0 && CurrentDirection == EntityDirection.Left)
             FlipDirection();
-        else if (xVelocity < 0 && currentDirection == EntityDirection.Right)
+        else if (xVelocity < 0 && CurrentDirection == EntityDirection.Right)
             FlipDirection();
     }
 
     public void FlipDirection()
     {
-        if (currentDirection == EntityDirection.Right)
-            currentDirection = EntityDirection.Left;
+        if (CurrentDirection == EntityDirection.Right)
+            CurrentDirection = EntityDirection.Left;
         else
-            currentDirection = EntityDirection.Right; 
+            CurrentDirection = EntityDirection.Right; 
 
         transform.Rotate(0f, 180f, 0f);
     }
@@ -127,14 +129,14 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -groundCheckDistance));
 
         // Wall Check
-        int directionMultiplier = currentDirection == EntityDirection.Right ? 1 : -1;
+        int directionMultiplier = CurrentDirection == EntityDirection.Right ? 1 : -1;
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0));
     }
 
     public void HandleCollisionDection()
     {
         Grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
-        WallDetected = Physics2D.Raycast(transform.position, currentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        WallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
     }
 
     public bool IsGrounded()

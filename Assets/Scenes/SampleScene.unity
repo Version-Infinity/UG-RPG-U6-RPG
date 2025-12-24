@@ -798,7 +798,7 @@ MonoBehaviour:
   JumpForce: 12
   WallSlideSpeed: 0.3
   InAirMoveMultiplier: 0.65
-  currentDirection: 1
+  WallJumpForce: {x: 6, y: 12}
   groundCheckDistance: 1.4
   wallCheckDistance: 0.4
   groundLayer:
@@ -812,7 +812,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000390153}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4.93, y: 3.67, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -911,7 +911,7 @@ Transform:
   m_GameObject: {fileID: 1422146873}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.64, y: 2.81, z: 0}
+  m_LocalPosition: {x: 6.37, y: 2.86, z: 0}
   m_LocalScale: {x: 4.3040442, y: 6.2804146, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
