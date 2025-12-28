@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
@@ -16,7 +17,14 @@ public class Player : MonoBehaviour
     public Player_WallSlideState WallSlideState { get; private set; }
     public Player_WallJumpState WallJumpState { get; private set; }
     public Player_DashState DashState { get; private set; }
+    public Player_BasicAttackState BasicAttackState { get; private set; }
+
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
+
+    [Header("Attack Settings")]
+    public Vector2 AttackVelocity;
+    public float AttackVelocityDuration = .1f;
+    
 
     [Header("Movement Settings")]
     public EntityDirection CurrentDirection { get; private set; } = EntityDirection.Right;
@@ -54,6 +62,8 @@ public class Player : MonoBehaviour
         WallSlideState = new Player_WallSlideState(this, machine);
         WallJumpState = new Player_WallJumpState(this, machine);
         DashState = new Player_DashState(this, machine);
+        BasicAttackState = new Player_BasicAttackState(this, machine);
+
         ProcessInititalState();
     }
 
@@ -125,6 +135,10 @@ public class Player : MonoBehaviour
         transform.Rotate(0f, 180f, 0f);
     }
 
+    public void CallAnimationTrigger()
+    {
+        machine.CurrentState.CallAnimationTrigger();
+    }
 
     private void OnDrawGizmos()
     {
@@ -153,5 +167,4 @@ public class Player : MonoBehaviour
     {
         return WallDetected;
     }
-
 }

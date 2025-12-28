@@ -3,12 +3,15 @@ using UnityEngine;
 public abstract class EntityState 
 {
     protected StateMachine assignedMachine;
-    protected string animatorBoolKey;
     protected Player assignedPlayer;
+    protected string animatorBoolKey;
+
     protected Animator playerAnimator;
     protected Rigidbody2D playerRigidbody2D;
     protected PlayerInputSet playerInputSet;
+    
     protected float stateTimer;
+    protected bool triggerCalled;
 
     public EntityState(Player player, StateMachine machine, string name)
     {
@@ -23,6 +26,7 @@ public abstract class EntityState
     public virtual void Enter()
     {
         playerAnimator.SetBool(animatorBoolKey, true);
+        triggerCalled = false;
     }
 
     public virtual void Update()
@@ -37,6 +41,11 @@ public abstract class EntityState
     public virtual void Exit()
     {
         playerAnimator.SetBool(animatorBoolKey, false);
+    }
+
+    public void CallAnimationTrigger()
+    {
+        triggerCalled = true;
     }
 
     private bool CanDash()
