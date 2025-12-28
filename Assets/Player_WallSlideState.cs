@@ -13,9 +13,7 @@ public class Player_WallSlideState : EntityState
         HandleWallSlide();
 
         if (playerInputSet.Player.Jump.WasPressedThisFrame())
-        {
             assignedMachine.ChangeState(assignedPlayer.WallJumpState);
-        }
 
         if (!assignedPlayer.WallDetected)
             assignedMachine.ChangeState(assignedPlayer.FallState);
@@ -25,6 +23,12 @@ public class Player_WallSlideState : EntityState
             assignedMachine.ChangeState(assignedPlayer.IdleState);
             assignedPlayer.FlipDirection();
         }
+
+        //if (playerInputSet.Player.Dash.WasPerformedThisFrame())
+        //{
+        //    assignedMachine.ChangeState(assignedPlayer.DashState);
+        //    assignedPlayer.FlipDirection();
+        //}
     }
 
     private void HandleWallSlide()

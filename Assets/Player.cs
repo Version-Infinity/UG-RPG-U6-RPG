@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     public Player_FallState FallState { get; private set; }
     public Player_WallSlideState WallSlideState { get; private set; }
     public Player_WallJumpState WallJumpState { get; private set; }
-
+    public Player_DashState DashState { get; private set; }
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     [Header("Movement Settings")]
@@ -23,11 +23,15 @@ public class Player : MonoBehaviour
     public int CurrentDirectionX { get { return CurrentDirection == EntityDirection.Right ? 1 : -1; } }
     public float MoveSpeed = 8f;
     public float JumpForce = 12f;
+    public Vector2 WallJumpForce;
+
+    [Range(0, 1)]
     public float WallSlideSpeed = .3f;
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
-    public Vector2 WallJumpForce;
-
+    [Space]
+    public float DashDuration = .25f;
+    public float DashSpeed = 20f;
 
     [Header("Ground Detection Settings")]
     [SerializeField] private float groundCheckDistance = 1.4f;
@@ -49,6 +53,7 @@ public class Player : MonoBehaviour
         FallState = new Player_FallState(this, machine);
         WallSlideState = new Player_WallSlideState(this, machine);
         WallJumpState = new Player_WallJumpState(this, machine);
+        DashState = new Player_DashState(this, machine);
         ProcessInititalState();
     }
 
