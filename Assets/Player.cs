@@ -22,9 +22,9 @@ public class Player : MonoBehaviour
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
     [Header("Attack Settings")]
-    public Vector2 AttackVelocity;
+    public Vector2[] AttackVelocity;
     public float AttackVelocityDuration = .1f;
-    
+    public float ComboRestTime = 1f;
 
     [Header("Movement Settings")]
     public EntityDirection CurrentDirection { get; private set; } = EntityDirection.Right;
