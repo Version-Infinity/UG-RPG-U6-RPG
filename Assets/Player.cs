@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using UnityEditor;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private StateMachine machine;
+    private StateMachine stateMachine;
     public PlayerInputSet InputSet { get; private set; }
 
     public Rigidbody2D Rigidbody { get; private set; }
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour
     public Vector2[] AttackVelocity;
     public float AttackVelocityDuration = .1f;
     public float ComboRestTime = 1f;
+    private Coroutine queuedAttackState;
 
     [Header("Movement Settings")]
     public EntityDirection CurrentDirection { get; private set; } = EntityDirection.Right;
@@ -54,15 +56,15 @@ public class Player : MonoBehaviour
         Rigidbody = GetComponent<Rigidbody2D>();
         InputSet = new PlayerInputSet();
 
-        machine = new StateMachine();
-        IdleState = new Player_IdleState(this, machine);
-        MoveState = new Player_MoveState(this, machine);
-        JumpState = new Player_JumpState(this, machine);
-        FallState = new Player_FallState(this, machine);
-        WallSlideState = new Player_WallSlideState(this, machine);
-        WallJumpState = new Player_WallJumpState(this, machine);
-        DashState = new Player_DashState(this, machine);
-        BasicAttackState = new Player_BasicAttackState(this, machine);
+        stateMachine = new StateMachine();
+        IdleState = new Player_IdleState(this, stateMachine);
+        MoveState = new Player_MoveState(this, stateMachine);
+        JumpState = new Player_JumpState(this, stateMachine);
+        FallState = new Player_FallState(this, stateMachine);
+        WallSlideState = new Player_WallSlideState(this, stateMachine);
+        WallJumpState = new Player_WallJumpState(this, stateMachine);
+        DashState = new Player_DashState(this, stateMachine);
+        BasicAttackState = new Player_BasicAttackState(this, stateMachine);
 
         ProcessInititalState();
     }
@@ -102,13 +104,26 @@ public class Player : MonoBehaviour
 
     public void Start()
     {
-        machine.Initialize(IdleState);
+        stateMachine.Initialize(IdleState);
     }
 
     public void Update()
     {
-        machine.UpdateCurrentState();
+        stateMachine.UpdateCurrentState();
         HandleCollisionDection();
+    }
+
+    private IEnumerator EnterAttackStateWithDelayCo() 
+    { 
+        yield return new WaitForEndOfFrame();
+        stateMachine.ChangeState(BasicAttackState);
+    }
+
+    public void QueueAttackState()
+    {
+        if (queuedAttackState != null)
+            StopCoroutine(queuedAttackState);
+        queuedAttackState = StartCoroutine(EnterAttackStateWithDelayCo());
     }
 
     public void SetVelocity(float x, float y)
@@ -137,7 +152,7 @@ public class Player : MonoBehaviour
 
     public void CallAnimationTrigger()
     {
-        machine.CurrentState.CallAnimationTrigger();
+        stateMachine.CurrentState.CallAnimationTrigger();
     }
 
     private void OnDrawGizmos()

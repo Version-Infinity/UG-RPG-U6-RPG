@@ -21,7 +21,7 @@ public class Player_DashState : EntityState
         playerRigidbody2D.gravityScale = 0f;
 
         // Ensure dash direction remains in current facing direction
-        dashDirectionX = assignedPlayer.CurrentDirectionX;
+        dashDirectionX = assignedPlayer.MovementInput.x != 0 ? (int)assignedPlayer.MovementInput.x : assignedPlayer.CurrentDirectionX;
     }
 
     override public void Update()
