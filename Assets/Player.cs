@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEditor;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class Player : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class Player : MonoBehaviour
     public Player_WallJumpState WallJumpState { get; private set; }
     public Player_DashState DashState { get; private set; }
     public Player_BasicAttackState BasicAttackState { get; private set; }
+    public Player_EdgeGrabState EdgeGrabState { get; private set; }
 
     public Vector2 MovementInput { get; private set; } = Vector2.zero;
 
@@ -40,6 +42,10 @@ public class Player : MonoBehaviour
     public float WallSlideSpeed = .3f;
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
+    [Range(0, 1)]
+    public float edgeCheckHeight = 1f;
+    public float edgeAirDetectionOffset = .04f;
+
     [Space]
     public float DashDuration = .25f;
     public float DashSpeed = 20f;
@@ -50,6 +56,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     public bool Grounded { get; private set; }
     public bool WallDetected { get; private set; }
+    public bool EdgeDetected { get; private set; }
 
     public void Awake()
     { 
@@ -66,8 +73,13 @@ public class Player : MonoBehaviour
         WallJumpState = new Player_WallJumpState(this, stateMachine);
         DashState = new Player_DashState(this, stateMachine);
         BasicAttackState = new Player_BasicAttackState(this, stateMachine);
+        EdgeGrabState = new Player_EdgeGrabState(this, stateMachine);
 
         ProcessInititalState();
+
+        Debug.LogWarning("TODO: Need to not Wall Slide when air above head is detected");
+        Debug.LogWarning("TODO: Need to allow Wall Slide from Edge Grab");
+
     }
 
     private void OnValidate()
@@ -166,19 +178,26 @@ public class Player : MonoBehaviour
         // Wall Check
         int directionMultiplier = CurrentDirection == EntityDirection.Right ? 1 : -1;
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0));
+
+        // Edge Check
+        Gizmos.DrawLine(transform.position + new Vector3(0, edgeCheckHeight), transform.position + new Vector3(wallCheckDistance * directionMultiplier, edgeCheckHeight));
+        // Check Air Above Edge
+        Gizmos.DrawLine(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), transform.position + new Vector3(wallCheckDistance * directionMultiplier, edgeCheckHeight + edgeAirDetectionOffset));
+        // /* Check Foot Ledge */ Gizmos.DrawLine(transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0), transform.position + new Vector3(wallCheckDistance * directionMultiplier, -groundCheckDistance));
     }
 
     public void HandleCollisionDection()
     {
         Grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
         WallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        EdgeDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        bool airAboveEdge = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        EdgeDetected = EdgeDetected && !airAboveEdge;
     }
 
     public bool CanAttack()
     {
         float time = Time.time;
-
-        Debug.Log($"{time} Grounded {IsGrounded()}");
 
         if (!IsGrounded())
             if (canAttack)
@@ -207,5 +226,10 @@ public class Player : MonoBehaviour
     public bool IsTouchingWall()
     {
         return WallDetected;
+    }
+
+    public bool IsTouchingEdge()
+    {
+        return EdgeDetected;
     }
 }

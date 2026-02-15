@@ -17,6 +17,9 @@ public class Player_WallSlideState : EntityState
 
         if (!assignedPlayer.WallDetected)
             assignedMachine.ChangeState(assignedPlayer.FallState);
+        
+        if(assignedPlayer.EdgeDetected)
+            assignedMachine.ChangeState(assignedPlayer.EdgeGrabState);
 
         if (assignedPlayer.Grounded)
         {
