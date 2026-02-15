@@ -7,7 +7,6 @@ public class Player_DashState : EntityState
 
     public Player_DashState(Player player, StateMachine machine) : base(player, machine, "dash")
     {
-       
     }
 
     override public void Enter()
@@ -47,6 +46,9 @@ public class Player_DashState : EntityState
 
     private void CheckForDashCancelation()
     {
+        if(playerInputSet.Player.Dash.WasReleasedThisFrame())
+             stateTimer = 0f;
+
         if (assignedPlayer.WallDetected)
             if (assignedPlayer.Grounded)
                 assignedMachine.ChangeState(assignedPlayer.IdleState);

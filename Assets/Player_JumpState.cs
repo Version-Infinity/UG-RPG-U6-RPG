@@ -25,7 +25,7 @@ public class Player_JumpState : Player_AiredState
 
     private void CheckForJumpCancelation()
     {
-       if(!playerInputSet.Player.Jump.IsPressed() && playerRigidbody2D.linearVelocityY > 0)
+       if(playerInputSet.Player.Jump.WasReleasedThisFrame() && playerRigidbody2D.linearVelocityY > 0)
         assignedPlayer.SetVelocity(playerRigidbody2D.linearVelocityX, -1);
     }
 }
