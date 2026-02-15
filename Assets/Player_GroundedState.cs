@@ -9,6 +9,7 @@ public class Player_GroundedState : EntityState
     public override void Enter()
     {
         base.Enter();
+        assignedPlayer.ResetCanAttack();
     }
 
     public override void Update()
@@ -27,6 +28,10 @@ public class Player_GroundedState : EntityState
 
     private bool attackInputDetected()
     {
-        return playerInputSet.Player.Attack.WasPressedThisFrame() || playerInputSet.Player.LightAttack.WasPressedThisFrame() || playerInputSet.Player.MediumAttack.WasPressedThisFrame() || playerInputSet.Player.HeavyAttack.WasPressedThisFrame();
+        bool attackAttampted = playerInputSet.Player.Attack.WasPressedThisFrame() || playerInputSet.Player.LightAttack.WasPressedThisFrame() || playerInputSet.Player.MediumAttack.WasPressedThisFrame() || playerInputSet.Player.HeavyAttack.WasPressedThisFrame();
+        if (attackAttampted)
+            return assignedPlayer.CanAttack();
+
+        return false;
     }
 }

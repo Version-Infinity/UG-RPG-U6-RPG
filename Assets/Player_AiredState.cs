@@ -19,5 +19,16 @@ public class Player_AiredState : EntityState
             assignedMachine.ChangeState(assignedPlayer.IdleState);
         else if (assignedPlayer.IsTouchingWall())
             assignedMachine.ChangeState(assignedPlayer.WallSlideState);
+        else if (attackInputDetected())
+            assignedMachine.ChangeState(assignedPlayer.BasicAttackState);
+    }
+
+    private bool attackInputDetected()
+    {
+        bool attackAttampted = playerInputSet.Player.Attack.WasPressedThisFrame() || playerInputSet.Player.LightAttack.WasPressedThisFrame() || playerInputSet.Player.MediumAttack.WasPressedThisFrame() || playerInputSet.Player.HeavyAttack.WasPressedThisFrame();
+        if (attackAttampted)
+            return assignedPlayer.CanAttack();
+        
+        return false;
     }
 }

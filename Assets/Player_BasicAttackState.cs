@@ -14,6 +14,7 @@ public class Player_BasicAttackState : EntityState
     private int comboIndex = 1;
     private float attackVelocityTimer;
     private float previousAttackTime;
+    private float preAttackVelocityX;
 
     public Player_BasicAttackState(Player player, StateMachine machine) : base(player, machine, "basicAttack")
     {
@@ -25,7 +26,19 @@ public class Player_BasicAttackState : EntityState
     {
         base.Enter();
         comboAttackQueued = false;
+        preAttackVelocityX = playerRigidbody2D.angularVelocity;
 
+
+        ResetComboIndexIfNeeded();
+        DetermineAttackDirection();
+        DetectAttackType();
+
+        playerAnimator.SetInteger("basicAttackIndex", comboIndex);
+        ApplyAttackVelocity();
+    }
+
+    private void DetectAttackType()
+    {
         var input = playerInputSet.Player;
         if (input.LightAttack.WasPressedThisFrame())
             comboIndex = 1;
@@ -33,12 +46,6 @@ public class Player_BasicAttackState : EntityState
             comboIndex = 2;
         else if (input.HeavyAttack.WasPressedThisFrame())
             comboIndex = 3;
-
-        ResetComboIndexIfNeeded();
-        DetermineAttackDirection();
-
-        playerAnimator.SetInteger("basicAttackIndex", comboIndex);
-        ApplyAttackVelocity();
     }
 
     private void DetermineAttackDirection()
@@ -51,7 +58,7 @@ public class Player_BasicAttackState : EntityState
         base.Update();
         HandleAttackVelocity();
 
-        if(assignedPlayer.InputSet.Player.Attack.WasPressedThisFrame())
+        if(assignedPlayer.InputSet.Player.Attack.WasPressedThisFrame() && assignedPlayer.CanAttack())
             QueueNextAttack();
 
         if (triggerCalled)
@@ -95,7 +102,7 @@ public class Player_BasicAttackState : EntityState
     {
         attackVelocityTimer = assignedPlayer.AttackVelocityDuration;
         var currentAttackVelocity = assignedPlayer.AttackVelocity[comboIndex - 1];
-        assignedPlayer.SetVelocity(attackDirecition * currentAttackVelocity.x, currentAttackVelocity.y);
+        assignedPlayer.SetVelocity((attackDirecition * currentAttackVelocity.x) + preAttackVelocityX, currentAttackVelocity.y);
     }
 
     private void ResetComboIndexIfNeeded()

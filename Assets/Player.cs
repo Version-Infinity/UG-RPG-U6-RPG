@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     public float AttackVelocityDuration = .1f;
     public float ComboRestTime = 1f;
     private Coroutine queuedAttackState;
+    private bool canAttack = true;
 
     [Header("Movement Settings")]
     public EntityDirection CurrentDirection { get; private set; } = EntityDirection.Right;
@@ -171,6 +172,31 @@ public class Player : MonoBehaviour
     {
         Grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
         WallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+    }
+
+    public bool CanAttack()
+    {
+        float time = Time.time;
+
+        Debug.Log($"{time} Grounded {IsGrounded()}");
+
+        if (!IsGrounded())
+            if (canAttack)
+            {
+                canAttack = false;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        return canAttack;
+    }
+
+    public void ResetCanAttack()
+    {
+        canAttack = IsGrounded();
     }
 
     public bool IsGrounded()
