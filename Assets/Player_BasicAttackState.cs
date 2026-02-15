@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player_BasicAttackState : EntityState
@@ -16,16 +18,22 @@ public class Player_BasicAttackState : EntityState
     public Player_BasicAttackState(Player player, StateMachine machine) : base(player, machine, "basicAttack")
     {
         if (MaxComboIndex != player.AttackVelocity.Length)
-        {
             MaxComboIndex = player.AttackVelocity.Length;
-            Debug.LogWarning($"Max combo index was set to {MaxComboIndex} to match the length of the AttackVelocity array in the Player script.");
-        }
     }
 
     override public void Enter()
     {
         base.Enter();
         comboAttackQueued = false;
+
+        var input = playerInputSet.Player;
+        if (input.LightAttack.WasPressedThisFrame())
+            comboIndex = 1;
+        else if (input.MediumAttack.WasPressedThisFrame())
+            comboIndex = 2;
+        else if (input.HeavyAttack.WasPressedThisFrame())
+            comboIndex = 3;
+
         ResetComboIndexIfNeeded();
         DetermineAttackDirection();
 

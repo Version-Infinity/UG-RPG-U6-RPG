@@ -21,7 +21,12 @@ public class Player_GroundedState : EntityState
         if (playerInputSet.Player.Jump.WasPressedThisFrame())
             assignedMachine.ChangeState(assignedPlayer.JumpState);
 
-        if(playerInputSet.Player.Attack.WasPerformedThisFrame())
+        if (attackInputDetected())
             assignedMachine.ChangeState(assignedPlayer.BasicAttackState);
+    }
+
+    private bool attackInputDetected()
+    {
+        return playerInputSet.Player.Attack.WasPressedThisFrame() || playerInputSet.Player.LightAttack.WasPressedThisFrame() || playerInputSet.Player.MediumAttack.WasPressedThisFrame() || playerInputSet.Player.HeavyAttack.WasPressedThisFrame();
     }
 }
