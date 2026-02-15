@@ -25,12 +25,7 @@ public class Player_JumpState : Player_AiredState
 
     private void CheckForJumpCancelation()
     {
-       if(playerInputSet.Player.Jump.IsPressed())
-           Debug.Log("Still Jumping");
-        else { 
-            Debug.Log("Jump Canceled");
-            if (playerRigidbody2D.linearVelocityY > 0)
-                assignedPlayer.SetVelocity(playerRigidbody2D.linearVelocityX, -1);
-        }
+       if(!playerInputSet.Player.Jump.IsPressed() && playerRigidbody2D.linearVelocityY > 0)
+        assignedPlayer.SetVelocity(playerRigidbody2D.linearVelocityX, -1);
     }
 }
