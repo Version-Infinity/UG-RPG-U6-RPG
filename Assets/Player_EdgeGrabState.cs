@@ -21,9 +21,11 @@ public class Player_EdgeGrabState : EntityState
         base.Update();
         if (playerInputSet.Player.Jump.WasPressedThisFrame())
             assignedMachine.ChangeState(assignedPlayer.WallJumpState);
-        else if (assignedPlayer.Grounded)
+        else if (assignedPlayer.IsGrounded())
             assignedMachine.ChangeState(assignedPlayer.IdleState);
-        else if (!assignedPlayer.EdgeDetected)
+        else if (playerInputSet.Player.Movement.ReadValue<Vector2>().y < 0)
+            assignedMachine.ChangeState(assignedPlayer.WallSlideState);
+        else if (!assignedPlayer.CanGrabEdge())
             assignedMachine.ChangeState(assignedPlayer.FallState);
     }
 

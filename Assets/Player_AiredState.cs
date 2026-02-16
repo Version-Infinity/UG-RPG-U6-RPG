@@ -17,6 +17,8 @@ public class Player_AiredState : EntityState
 
         if(assignedPlayer.IsGrounded())
             assignedMachine.ChangeState(assignedPlayer.IdleState);
+        if(assignedPlayer.CanGrabEdge())
+            assignedMachine.ChangeState(assignedPlayer.EdgeGrabState);
         else if (assignedPlayer.IsTouchingWall())
             assignedMachine.ChangeState(assignedPlayer.WallSlideState);
         else if (attackInputDetected())

@@ -50,6 +50,6 @@ public abstract class EntityState
 
     private bool CanDash()
     {
-        return assignedMachine.CurrentState != assignedPlayer.DashState && !assignedPlayer.WallDetected;
+        return assignedMachine.CurrentState != assignedPlayer.DashState && !assignedPlayer.IsTouchingWall();
     }
 }

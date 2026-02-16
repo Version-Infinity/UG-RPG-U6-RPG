@@ -42,9 +42,8 @@ public class Player : MonoBehaviour
     public float WallSlideSpeed = .3f;
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
-    [Range(0, 1)]
     public float edgeCheckHeight = 1f;
-    public float edgeAirDetectionOffset = .04f;
+    public float edgeAirDetectionOffset = .15f;
 
     [Space]
     public float DashDuration = .25f;
@@ -54,9 +53,9 @@ public class Player : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 1.4f;
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
-    public bool Grounded { get; private set; }
-    public bool WallDetected { get; private set; }
-    public bool EdgeDetected { get; private set; }
+    private bool grounded;
+    private bool wallDetected;
+    private bool edgeGrabDetected;
 
     public void Awake()
     { 
@@ -77,9 +76,7 @@ public class Player : MonoBehaviour
 
         ProcessInititalState();
 
-        Debug.LogWarning("TODO: Need to not Wall Slide when air above head is detected");
-        Debug.LogWarning("TODO: Need to allow Wall Slide from Edge Grab");
-
+        Debug.LogWarning("TODO: Fix wall slide entered when head alone touches wall");
     }
 
     private void OnValidate()
@@ -177,7 +174,7 @@ public class Player : MonoBehaviour
 
         // Wall Check
         int directionMultiplier = CurrentDirection == EntityDirection.Right ? 1 : -1;
-        Gizmos.DrawLine(transform.position, transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0));
+        //Gizmos.DrawLine(transform.position, transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0));
 
         // Edge Check
         Gizmos.DrawLine(transform.position + new Vector3(0, edgeCheckHeight), transform.position + new Vector3(wallCheckDistance * directionMultiplier, edgeCheckHeight));
@@ -188,11 +185,11 @@ public class Player : MonoBehaviour
 
     public void HandleCollisionDection()
     {
-        Grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
-        WallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
-        EdgeDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+        //wallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        wallDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
         bool airAboveEdge = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
-        EdgeDetected = EdgeDetected && !airAboveEdge;
+        edgeGrabDetected = wallDetected && !airAboveEdge;
     }
 
     public bool CanAttack()
@@ -220,16 +217,16 @@ public class Player : MonoBehaviour
 
     public bool IsGrounded()
     {
-        return Grounded;
+        return grounded;
     }
 
     public bool IsTouchingWall()
     {
-        return WallDetected;
+        return wallDetected;
     }
 
-    public bool IsTouchingEdge()
+    public bool CanGrabEdge()
     {
-        return EdgeDetected;
+        return edgeGrabDetected;
     }
 }

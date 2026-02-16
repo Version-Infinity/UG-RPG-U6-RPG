@@ -31,7 +31,7 @@ public class Player_DashState : EntityState
         assignedPlayer.SetVelocity(dashDirectionX * assignedPlayer.DashSpeed, 0f);
 
         if (stateTimer <= 0f)
-            if (assignedPlayer.Grounded)
+            if (assignedPlayer.IsGrounded())
                 assignedMachine.ChangeState(assignedPlayer.IdleState);
             else
                 assignedMachine.ChangeState(assignedPlayer.FallState);
@@ -49,8 +49,8 @@ public class Player_DashState : EntityState
         if(playerInputSet.Player.Dash.WasReleasedThisFrame())
              stateTimer = 0f;
 
-        if (assignedPlayer.WallDetected)
-            if (assignedPlayer.Grounded)
+        if (assignedPlayer.IsTouchingWall())
+            if (assignedPlayer.IsGrounded())
                 assignedMachine.ChangeState(assignedPlayer.IdleState);
             else
                 assignedMachine.ChangeState(assignedPlayer.WallSlideState);

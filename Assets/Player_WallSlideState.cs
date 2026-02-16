@@ -15,13 +15,11 @@ public class Player_WallSlideState : EntityState
         if (playerInputSet.Player.Jump.WasPressedThisFrame())
             assignedMachine.ChangeState(assignedPlayer.WallJumpState);
 
-        if (!assignedPlayer.WallDetected)
-            assignedMachine.ChangeState(assignedPlayer.FallState);
-        
-        if(assignedPlayer.EdgeDetected)
+        if (assignedPlayer.CanGrabEdge() && !(playerInputSet.Player.Movement.ReadValue<Vector2>().y < 0))
             assignedMachine.ChangeState(assignedPlayer.EdgeGrabState);
-
-        if (assignedPlayer.Grounded)
+        else if (!assignedPlayer.IsTouchingWall())
+            assignedMachine.ChangeState(assignedPlayer.FallState);
+        else if (assignedPlayer.IsGrounded())
         {
             assignedMachine.ChangeState(assignedPlayer.IdleState);
             assignedPlayer.FlipDirection();

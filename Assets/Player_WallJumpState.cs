@@ -24,7 +24,7 @@ public class Player_WallJumpState : EntityState
         if (playerRigidbody2D.linearVelocityY < 0)
             assignedMachine.ChangeState(assignedPlayer.FallState);
 
-        if(assignedPlayer.WallDetected)
+        if(assignedPlayer.IsTouchingWall())
             assignedMachine.ChangeState(assignedPlayer.WallSlideState);
     }
 }

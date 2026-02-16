@@ -16,7 +16,7 @@ public class Player_GroundedState : EntityState
     {
         base.Update();
 
-        if (!assignedPlayer.Grounded)
+        if (!assignedPlayer.IsGrounded())
             assignedMachine.ChangeState(assignedPlayer.FallState);
 
         if (playerInputSet.Player.Jump.WasPressedThisFrame())
