@@ -19,7 +19,7 @@ public class Player_AiredState : EntityState
             assignedMachine.ChangeState(assignedPlayer.IdleState);
         if(assignedPlayer.CanGrabEdge())
             assignedMachine.ChangeState(assignedPlayer.EdgeGrabState);
-        else if (assignedPlayer.IsTouchingWall())
+        else if (assignedPlayer.CanWallSlide())
             assignedMachine.ChangeState(assignedPlayer.WallSlideState);
         else if (attackInputDetected())
             assignedMachine.ChangeState(assignedPlayer.BasicAttackState);

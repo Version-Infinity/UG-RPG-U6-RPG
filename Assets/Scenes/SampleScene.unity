@@ -645,7 +645,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 673170949}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -960,8 +960,6 @@ MonoBehaviour:
   WallJumpForce: {x: 6, y: 12}
   WallSlideSpeed: 0.3
   InAirMoveMultiplier: 0.65
-  edgeCheckHeight: 1
-  edgeAirDetectionOffset: 0.15
   DashDuration: 0.25
   DashSpeed: 20
   groundCheckDistance: 1.4
@@ -969,6 +967,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  edgeCheckHeight: 1
+  edgeAirDetectionOffset: 0.15
 --- !u!4 &1000390155
 Transform:
   m_ObjectHideFlags: 0
@@ -978,7 +978,7 @@ Transform:
   m_GameObject: {fileID: 1000390153}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.05, y: 5.15, z: 0}
+  m_LocalPosition: {x: -5.03, y: 5.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

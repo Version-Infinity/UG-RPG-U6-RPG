@@ -9,7 +9,7 @@ public class Player_GroundedState : EntityState
     public override void Enter()
     {
         base.Enter();
-        assignedPlayer.ResetCanAttack();
+        assignedPlayer.ResetActions();
     }
 
     public override void Update()

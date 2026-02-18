@@ -42,21 +42,27 @@ public class Player : MonoBehaviour
     public float WallSlideSpeed = .3f;
     [Range(0, 1)]
     public float InAirMoveMultiplier = 0.5f;
-    public float edgeCheckHeight = 1f;
-    public float edgeAirDetectionOffset = .15f;
+
 
     [Space]
     public float DashDuration = .25f;
     public float DashSpeed = 20f;
+    private bool canDash = true;
 
     [Header("Ground Detection Settings")]
     [SerializeField] private float groundCheckDistance = 1.4f;
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float edgeCheckHeight = 1f;
+    [SerializeField] private float edgeAirDetectionOffset = .15f;
+    public float CeilingCheckDistance { get { return edgeCheckHeight + edgeAirDetectionOffset; } }
+
     private bool grounded;
     private bool wallDetected;
-    private bool edgeGrabDetected;
-
+    private bool wallForLedgeDetected;
+    private bool wallAboveLedgeCheckDetected;
+    private bool ceilingDetected;
+    
     public void Awake()
     { 
         Animator = GetComponentInChildren<Animator>();
@@ -75,8 +81,6 @@ public class Player : MonoBehaviour
         EdgeGrabState = new Player_EdgeGrabState(this, stateMachine);
 
         ProcessInititalState();
-
-        Debug.LogWarning("TODO: Fix wall slide entered when head alone touches wall");
     }
 
     private void OnValidate()
@@ -181,21 +185,24 @@ public class Player : MonoBehaviour
         // Check Air Above Edge
         Gizmos.DrawLine(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), transform.position + new Vector3(wallCheckDistance * directionMultiplier, edgeCheckHeight + edgeAirDetectionOffset));
         // /* Check Foot Ledge */ Gizmos.DrawLine(transform.position + new Vector3(wallCheckDistance * directionMultiplier, 0), transform.position + new Vector3(wallCheckDistance * directionMultiplier, -groundCheckDistance));
+
+        // Ceiling Check
+        Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, CeilingCheckDistance));
     }
 
     public void HandleCollisionDection()
     {
         grounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
-        //wallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
-        wallDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
-        bool airAboveEdge = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
-        edgeGrabDetected = wallDetected && !airAboveEdge;
+        wallDetected = Physics2D.Raycast(transform.position, CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        
+        wallForLedgeDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+        wallAboveLedgeCheckDetected = Physics2D.Raycast(transform.position + new Vector3(0, edgeCheckHeight + edgeAirDetectionOffset), CurrentDirection == EntityDirection.Right ? Vector2.right : Vector2.left, wallCheckDistance, groundLayer);
+
+        ceilingDetected = Physics2D.Raycast(transform.position, Vector2.up, CeilingCheckDistance, groundLayer);
     }
 
     public bool CanAttack()
     {
-        float time = Time.time;
-
         if (!IsGrounded())
             if (canAttack)
             {
@@ -210,10 +217,27 @@ public class Player : MonoBehaviour
         return canAttack;
     }
 
-    public void ResetCanAttack()
+    public bool CanDash()
     {
-        canAttack = IsGrounded();
+        if (!IsGrounded())
+            if (canDash)
+            {
+                canDash = false;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        return canDash;
     }
+
+    public void ResetActions()
+    {
+        canAttack = true;
+        canDash = true;
+    }   
 
     public bool IsGrounded()
     {
@@ -227,6 +251,11 @@ public class Player : MonoBehaviour
 
     public bool CanGrabEdge()
     {
-        return edgeGrabDetected;
+        return wallForLedgeDetected && !wallAboveLedgeCheckDetected && !ceilingDetected;
+    }
+
+    internal bool CanWallSlide()
+    {
+        return wallDetected && wallAboveLedgeCheckDetected;
     }
 }
